@@ -34,20 +34,21 @@ pub async fn custom_reflector<K, W>(
                         match event {
                             // Immediately reconcile `Applied` event
                             watcher::Event::Applied(ref obj) => {
-                                trace!(message = "Processing Applied event.", ?event);
+                                debug!(message = "Processing Applied event.", ?event);
                                 store.apply_watcher_event(&event);
                                 let meta_descr = MetaDescribe::from_meta(obj.meta());
                                 meta_cache.store(meta_descr);
                             }
                             // Delay reconciling any `Deleted` events
                             watcher::Event::Deleted(ref obj) => {
+                                debug!(message = "Delaying processing of Deleted event.", ?event);
                                 delay_queue.insert(event.to_owned(), delay_deletion);
                                 let meta_descr = MetaDescribe::from_meta(obj.meta());
                                 meta_cache.delete(&meta_descr);
                             }
                             // Clear all delayed events on `Restarted` events
                             watcher::Event::Restarted(_) => {
-                                trace!(message = "Processing Restarted event.", ?event);
+                                debug!(message = "Processing Restarted event.", ?event);
                                 delay_queue.clear();
                                 store.apply_watcher_event(&event);
                                 meta_cache.clear();
@@ -72,7 +73,7 @@ pub async fn custom_reflector<K, W>(
                             watcher::Event::Deleted(ref obj) => {
                                 let meta_desc = MetaDescribe::from_meta(obj.meta());
                                 if !meta_cache.contains(&meta_desc) {
-                                    trace!(message = "Processing Deleted event.", ?event);
+                                    debug!(message = "Processing Deleted event.", ?event);
                                     store.apply_watcher_event(&event);
                                 }
                             },
