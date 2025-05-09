@@ -256,8 +256,9 @@ aws-smithy-runtime-api = { version = "1.7.3", default-features = false, optional
 aws-smithy-types = { version = "1.2.11", default-features = false, features = ["rt-tokio"], optional = true }
 
 # Azure
-azure_core = { version = "0.21", default-features = false, features = ["hmac_rust", "enable_reqwest"], optional = true }
-azure_identity = { version = "0.21", default-features = false, features = ["enable_reqwest"], optional = true }
+azure_core_21 = { package = "azure_core", version = "0.21", default-features = false, features = ["hmac_rust", "enable_reqwest"], optional = true }
+azure_core_22 = { package = "azure_core", version = "0.22", default-features = false, features = ["hmac_rust", "reqwest"], optional = true }
+azure_identity = { version = "0.22", default-features = false, features = ["reqwest"], optional = true }
 azure_storage = { version = "0.21", default-features = false, optional = true }
 azure_storage_blobs = { version = "0.21", default-features = false, optional = true }
 
@@ -428,8 +429,9 @@ openssl-src = { version = "300", default-features = false, features = ["force-en
 approx = "0.5.1"
 assert_cmd = { version = "2.0.17", default-features = false }
 aws-smithy-runtime = { version = "1.8.3", default-features = false, features = ["tls-rustls"] }
-azure_core = { version = "0.21", default-features = false, features = ["enable_reqwest", "azurite_workaround"] }
-azure_identity = { version = "0.21", default-features = false, features = ["enable_reqwest"] }
+azure_core_21 = { package = "azure_core", version = "0.21", default-features = false, features = ["enable_reqwest", "azurite_workaround"] }
+azure_core_22 = { package = "azure_core", version = "0.22", default-features = false, features = ["reqwest", "azurite_workaround"] }
+azure_identity = { version = "0.22", default-features = false, features = ["reqwest"] }
 azure_storage_blobs = { version = "0.21", default-features = false, features = ["azurite_workaround"] }
 azure_storage = { version = "0.21", default-features = false }
 base64 = "0.22.1"
@@ -792,7 +794,7 @@ sinks-aws_s3 = ["dep:base64", "dep:md-5", "aws-core", "dep:aws-sdk-s3"]
 sinks-aws_sqs = ["aws-core", "dep:aws-sdk-sqs"]
 sinks-aws_sns = ["aws-core", "dep:aws-sdk-sns"]
 sinks-axiom = ["sinks-http"]
-sinks-azure_blob = ["dep:azure_core", "dep:azure_identity", "dep:azure_storage", "dep:azure_storage_blobs"]
+sinks-azure_blob = ["dep:azure_core_21", "dep:azure_core_22", "dep:azure_identity", "dep:azure_storage", "dep:azure_storage_blobs"]
 sinks-azure_monitor_logs = []
 sinks-blackhole = []
 sinks-chronicle = []

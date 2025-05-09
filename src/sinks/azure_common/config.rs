@@ -1,6 +1,17 @@
 use std::sync::Arc;
 
-use azure_core::{error::HttpError, RetryOptions};
+use azure_core_21::{
+    auth::{
+        AccessToken as AccessToken_21, Secret as Secret_21, TokenCredential as TokenCredential_21,
+    },
+    error::{Error as Error_21, ErrorKind as ErrorKind_21, HttpError},
+    RetryOptions,
+};
+use azure_core_22::{
+    credentials::TokenCredential as TokenCredential_22,
+    error::{Error as Error_22, ErrorKind as ErrorKind_22},
+};
+use azure_identity::DefaultAzureCredential;
 use azure_storage::{prelude::*, CloudLocation, ConnectionString};
 use azure_storage_blobs::{blob::operations::PutBlockBlobResponse, prelude::*};
 use bytes::Bytes;
@@ -160,8 +171,11 @@ pub fn build_client(
             .container_client(container_name);
         }
         (None, Some(storage_account_p)) => {
-            let creds = azure_identity::create_default_credential()?;
-            let storage_credentials = StorageCredentials::token_credential(creds);
+            let creds: Arc<DefaultAzureCredential> = DefaultAzureCredential::new()?;
+            let storage_credentials =
+                StorageCredentials::token_credential(Arc::new(DefaultAzureCredentialHolder {
+                    default_azure_credential: creds,
+                }));
 
             client = match endpoint {
                 // If a blob_endpoint is provided in the configuration, use it with a Custom
@@ -192,4 +206,60 @@ pub fn build_client(
         }
     }
     Ok(std::sync::Arc::new(client))
+}
+
+// The below is a workaround for the fact that there is no version 0.22.0 of azure_storage, so we have to
+// convert from TokenCredential as defined in version 0.22.0 of azure_identity to the (identical) one
+// defined in version 0.21.0 so that when we pass in the DefaultAzureCredential as defined in version 0.22.0
+// of azure_identity, it matches the bounds declared by StorageCredentials::token_credential from version 0.21.0
+// of azure_storage.
+
+#[derive(Debug)]
+struct DefaultAzureCredentialHolder {
+    default_azure_credential: Arc<DefaultAzureCredential>,
+}
+
+fn as_error_21(error: Error_22) -> Error_21 {
+    // deal with one extra wrapper layer to avoid having to fully handle all the various cases
+    // (which we can't really do anyway bc context is private on Error)
+    Error_21::new(as_error_kind_21(error.kind().clone()), error)
+}
+
+fn as_error_kind_21(error_kind: ErrorKind_22) -> ErrorKind_21 {
+    match error_kind {
+        ErrorKind_22::Credential => ErrorKind_21::Credential,
+        ErrorKind_22::DataConversion => ErrorKind_21::DataConversion,
+        ErrorKind_22::HttpResponse { status, error_code } => {
+            ErrorKind_21::HttpResponse { status, error_code }
+        }
+        ErrorKind_22::Io => ErrorKind_21::Io,
+        ErrorKind_22::MockFramework => ErrorKind_21::MockFramework,
+        ErrorKind_22::Other => ErrorKind_21::Other,
+    }
+}
+
+#[cfg_attr(target_arch = "wasm32", async_trait::async_trait(?Send))]
+#[cfg_attr(not(target_arch = "wasm32"), async_trait::async_trait)]
+impl TokenCredential_21 for DefaultAzureCredentialHolder {
+    async fn get_token(
+        &self,
+        scopes: &[&str],
+    ) -> azure_core_21::Result<azure_core_21::auth::AccessToken> {
+        let result = self.default_azure_credential.get_token(scopes).await;
+        match result {
+            Ok(t) => Ok(AccessToken_21 {
+                token: Secret_21::new(t.token.secret().to_owned()),
+                expires_on: t.expires_on,
+            }),
+            Err(e) => Err(as_error_21(e)),
+        }
+    }
+
+    async fn clear_cache(&self) -> azure_core_21::Result<()> {
+        let res = self.default_azure_credential.clear_cache().await;
+        match res {
+            Ok(t) => Ok(t),
+            Err(e) => Err(as_error_21(e)),
+        }
+    }
 }

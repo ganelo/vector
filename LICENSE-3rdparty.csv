@@ -80,8 +80,9 @@ aws-smithy-xml,https://github.com/smithy-lang/smithy-rs,Apache-2.0,"AWS Rust SDK
 aws-types,https://github.com/smithy-lang/smithy-rs,Apache-2.0,"AWS Rust SDK Team <aws-sdk-rust@amazon.com>, Russell Cohen <rcoh@amazon.com>"
 axum,https://github.com/tokio-rs/axum,MIT,The axum Authors
 axum-core,https://github.com/tokio-rs/axum,MIT,The axum-core Authors
+azure_core,https://github.com/azure/azure-sdk-for-rust,MIT,Microsoft
 azure_core,https://github.com/azure/azure-sdk-for-rust,MIT,Microsoft Corp.
-azure_identity,https://github.com/azure/azure-sdk-for-rust,MIT,Microsoft Corp.
+azure_identity,https://github.com/azure/azure-sdk-for-rust,MIT,Microsoft
 azure_storage,https://github.com/azure/azure-sdk-for-rust,MIT,Microsoft Corp.
 azure_storage_blobs,https://github.com/azure/azure-sdk-for-rust,MIT,Microsoft Corp.
 azure_svc_blobstorage,https://github.com/azure/azure-sdk-for-rust,MIT,The azure_svc_blobstorage Authors
@@ -676,6 +677,9 @@ tungstenite,https://github.com/snapview/tungstenite-rs,MIT OR Apache-2.0,"Alexey
 twox-hash,https://github.com/shepmaster/twox-hash,MIT,Jake Goulding <jake.goulding@gmail.com>
 typed-builder,https://github.com/idanarye/rust-typed-builder,MIT OR Apache-2.0,"IdanArye <idanarye@gmail.com>, Chris Morgan <me@chrismorgan.info>"
 typenum,https://github.com/paholg/typenum,MIT OR Apache-2.0,"Paho Lurie-Gregg <paho@paholg.com>, Andre Bogus <bogusandre@gmail.com>"
+typespec,https://github.com/azure/azure-sdk-for-rust,MIT,Microsoft
+typespec_client_core,https://github.com/azure/azure-sdk-for-rust,MIT,Microsoft
+typespec_macros,https://github.com/azure/azure-sdk-for-rust,MIT,Microsoft
 typetag,https://github.com/dtolnay/typetag,MIT OR Apache-2.0,David Tolnay <dtolnay@gmail.com>
 ua-parser,https://github.com/ua-parser/uap-rust,Apache-2.0,The ua-parser Authors
 ucd-trie,https://github.com/BurntSushi/ucd-generate,MIT OR Apache-2.0,Andrew Gallant <jamslam@gmail.com>
